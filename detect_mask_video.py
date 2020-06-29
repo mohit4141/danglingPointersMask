@@ -12,6 +12,9 @@ import imutils
 import time
 import cv2
 import os
+import mailer
+from PIL import Image
+import datetime
 
 def detect_and_predict_mask(frame, faceNet, maskNet):
 	# grab the dimensions of the frame and then construct a blob
@@ -80,7 +83,7 @@ ap.add_argument("-f", "--face", type=str,
 	default="face_detector",
 	help="path to face detector model directory")
 ap.add_argument("-m", "--model", type=str,
-	default="mask_detector.model",
+	default="customModel.model",
 	help="path to trained face mask detector model")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
 	help="minimum probability to filter weak detections")
@@ -102,12 +105,14 @@ print("[INFO] starting video stream...")
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
+t = datetime.datetime.now()
+sendMail = False
 # loop over the frames from the video stream
 while True:
 	# grab the frame from the threaded video stream and resize it
 	# to have a maximum width of 400 pixels
 	frame = vs.read()
-	frame = imutils.resize(frame, width=400)
+	frame = imutils.resize(frame, width=800)
 
 	# detect faces in the frame and determine if they are wearing a
 	# face mask or not
@@ -124,7 +129,10 @@ while True:
 		# the bounding box and text
 		label = "Mask" if mask > withoutMask else "No Mask"
 		color = (0, 255, 0) if label == "Mask" else (0, 0, 255)
-
+		if label == "No Mask":
+			sendMail = True
+		else:
+			sendMail = False
 		# include the probability in the label
 		label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
 
@@ -136,6 +144,11 @@ while True:
 
 	# show the output frame
 	cv2.imshow("Frame", frame)
+	if datetime.datetime.now().minute - t.minute > 3 and sendMail :
+		img = Image.fromarray(frame, 'RGB')
+		img.save('defaulter.png')
+		mailer.sender(img)
+		t = datetime.datetime.now()
 	key = cv2.waitKey(1) & 0xFF
 
 	# if the `q` key was pressed, break from the loop

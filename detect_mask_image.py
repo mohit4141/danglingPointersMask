@@ -9,6 +9,8 @@ import numpy as np
 import argparse
 import cv2
 import os
+import mailer
+from PIL import Image
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -98,4 +100,8 @@ for i in range(0, detections.shape[2]):
 
 # show the output image
 cv2.imshow("Output", image)
+# print(type(image))
+img = Image.fromarray(image, 'RGB')
+img.save('defaulter.png')
+mailer.sender(img)
 cv2.waitKey(0)
