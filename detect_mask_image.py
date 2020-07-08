@@ -9,7 +9,7 @@ import numpy as np
 import argparse
 import cv2
 import os
-import mailer
+# import mailer
 from PIL import Image
 
 # construct the argument parser and parse the arguments
@@ -103,5 +103,5 @@ cv2.imshow("Output", image)
 # print(type(image))
 img = Image.fromarray(image, 'RGB')
 img.save('defaulter.png')
-mailer.sender(img)
+# mailer.sender(img)
 cv2.waitKey(0)

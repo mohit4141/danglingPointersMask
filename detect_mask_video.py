@@ -12,7 +12,6 @@ import imutils
 import time
 import cv2
 import os
-import mailer
 from PIL import Image
 import datetime
 
@@ -105,8 +104,8 @@ print("[INFO] starting video stream...")
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
-t = datetime.datetime.now()
-sendMail = False
+# t = datetime.datetime.now()
+# sendMail = False
 # loop over the frames from the video stream
 while True:
 	# grab the frame from the threaded video stream and resize it
@@ -144,11 +143,10 @@ while True:
 
 	# show the output frame
 	cv2.imshow("Frame", frame)
-	if datetime.datetime.now().minute - t.minute > 3 and sendMail :
-		img = Image.fromarray(frame, 'RGB')
-		img.save('defaulter.png')
-		mailer.sender(img)
-		t = datetime.datetime.now()
+	# if datetime.datetime.now().minute - t.minute > 3 and sendMail :
+	img = Image.fromarray(frame, 'RGB')
+	img.save('defaulter.png')
+	# t = datetime.datetime.now()
 	key = cv2.waitKey(1) & 0xFF
 
 	# if the `q` key was pressed, break from the loop
